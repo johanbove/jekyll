@@ -29,12 +29,12 @@ The simplest test script simply runs `jekyll build` and ensures that Jekyll
 doesn't fail to build the site. It doesn't check the resulting site, but it
 does ensure things are built properly.
 
-Save the script commands in a file: ```./script/cibuild```
-
 When testing Jekyll output, there is no better tool than [html-proofer][2].
 This tool checks your resulting site to ensure all links and images exist.
 Utilize it either with the convenient `htmlproof` command-line executable,
 or write a Ruby script which utilizes the gem.
+
+Save the commands you want to run and succeed in a file: `./script/cibuild`
 
 ### The HTML Proofer Executable
 
@@ -52,7 +52,9 @@ Some options can be specified via command-line switches. Check out the
 
 For example to avoid testing external sites, use this command:
 
-    bundle exec htmlproof ./_site --disable-external
+{% highlight bash %}
+$ bundle exec htmlproof ./_site --disable-external
+{% endhighlight %}
 
 ### The HTML Proofer Library
 
@@ -87,7 +89,7 @@ gem "jekyll"
 gem "html-proofer"
 {% endhighlight %}
 
-Your ``.travis.yml`` file should look like this:
+Your `.travis.yml` file should look like this:
 
 {% highlight yaml %}
 language: ruby
@@ -95,12 +97,13 @@ rvm:
 - 2.1
 
 before_script:
- - chmod +x ./script/cibuild
+ - chmod +x ./script/cibuild # or do this locally and commit
 
-# Assume bundler is being used, install step will run `bundle install`.
+# Assume bundler is being used, therefore
+# the `install` step will run `bundle install` by default.
 script: ./script/cibuild
 
-# branch whitelist
+# branch whitelist, only for GitHub Pages
 branches:
   only:
   - gh-pages     # test the gh-pages branch
@@ -135,7 +138,9 @@ before_script:
 {% endhighlight %}
 
 The build script file needs to have the *executable* attribute set or
-Travis will fail with a permission denied error.
+Travis will fail with a permission denied error. You can also run this
+locally and commit the permissions directly, thus rendering this step
+irrelevant.
 
 {% highlight yaml %}
 script: ./script/cibuild
@@ -155,7 +160,7 @@ script: jekyll build && htmlproof ./_site
 The `script` directive can be absolutely any valid shell command.
 
 {% highlight yaml %}
-# branch whitelist
+# branch whitelist, only for GitHub Pages
 branches:
   only:
   - gh-pages     # test the gh-pages branch
@@ -172,7 +177,7 @@ convention for your builds such that all branches containing edits are
 prefixed, exemplified above with the `/pages-(.*)/` regular expression.
 
 The `branches` directive is completely optional. Travis will build from every
-push to the ``master`` branch of your repo if leave it out.
+push to any branch of your repo if leave it out.
 
 {% highlight yaml %}
 env:
@@ -203,8 +208,9 @@ exclude: [vendor]
 your Gemfile. Run `bundle install` elsewhere and add the updated Gemfile.lock
 to version control."*
 
-**Workaround:** remove the ``Gemfile.lock`` file from your repository and add an
-entry in the ``.gitignore`` file to avoid it from being checked in again.
+**Workaround:** Either run `bundle install` locally and commit your changes to
+`Gemfile.lock`, or remove the `Gemfile.lock` file from your repository and add
+an entry in the `.gitignore` file to avoid it from being checked in again.
 
 ### Questions?
 
@@ -212,4 +218,4 @@ This entire guide is open-source. Go ahead and [edit it][3] if you have a
 fix or [ask for help][4] if you run into trouble and need some help.
 
 [3]: https://github.com/jekyll/jekyll/edit/master/site/_docs/continuous-integration.md
-[4]: https://github.com/jekyll/jekyll-help#how-do-i-ask-a-question
+[4]: http://jekyllrb.com/help/
